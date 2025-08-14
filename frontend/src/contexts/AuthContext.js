@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       checkAuthStatus();
     } else {
       setLoading(false);
@@ -30,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get('/api/auth/user');
+      const response = await api.get('/api/auth/user');
       if (response.data.success) {
         setUser(response.data.user);
         setIsAuthenticated(true);
@@ -38,8 +37,11 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Authentication failed');
       }
     } catch (error) {
+      // Clear any invalid authentication data
       localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
+      setUser(null);
+      setIsAuthenticated(false);
+      console.log('Authentication check failed, user redirected to login');
     } finally {
       setLoading(false);
     }
@@ -47,13 +49,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await api.post('/api/auth/login', { email, password });
       
       if (response.data.success) {
         const { token, user } = response.data;
         
         localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         
         setUser(user);
         setIsAuthenticated(true);
@@ -74,13 +75,12 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('/api/auth/register', { name, email, password });
+      const response = await api.post('/api/auth/register', { name, email, password });
       
       if (response.data.success) {
         const { token, user } = response.data;
         
         localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         
         setUser(user);
         setIsAuthenticated(true);
@@ -108,7 +108,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     setIsAuthenticated(false);
     toast.success('Logged out successfully');

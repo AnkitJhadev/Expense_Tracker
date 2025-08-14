@@ -38,15 +38,13 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
   };
 
   const categories = [
-    'Food & Dining',
-    'Transportation',
+    'Food',
+    'Transport',
     'Entertainment',
     'Shopping',
-    'Bills & Utilities',
+    'Bills',
     'Healthcare',
     'Education',
-    'Travel',
-    'Gifts',
     'Other'
   ];
 

@@ -8,15 +8,13 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
   const [filterCategory, setFilterCategory] = useState('');
 
   const categories = [
-    'Food & Dining',
-    'Transportation',
+    'Food',
+    'Transport',
     'Entertainment',
     'Shopping',
-    'Bills & Utilities',
+    'Bills',
     'Healthcare',
     'Education',
-    'Travel',
-    'Gifts',
     'Other'
   ];
 
@@ -64,15 +62,13 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
 
   const getCategoryColor = (category) => {
     const colors = {
-      'Food & Dining': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-      'Transportation': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      'Food': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+      'Transport': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
       'Entertainment': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
       'Shopping': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
-      'Bills & Utilities': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+      'Bills': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
       'Healthcare': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       'Education': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-      'Travel': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
-      'Gifts': 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
       'Other': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
     };
     return colors[category] || colors['Other'];

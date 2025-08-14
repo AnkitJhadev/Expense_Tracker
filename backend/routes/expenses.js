@@ -12,10 +12,16 @@ router.get('/', auth, async (req, res) => {
   try {
     const expenses = await Expense.find({ user: req.user._id })
       .sort({ date: -1 });
-    res.json(expenses);
+    res.json({
+      success: true,
+      data: expenses
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Error fetching expenses:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while fetching expenses'
+    });
   }
 });
 
@@ -110,7 +116,15 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path,
+          message: err.msg,
+          value: err.value
+        }))
+      });
     }
 
     const { title, amount, category, description, date } = req.body;
@@ -125,10 +139,17 @@ router.post('/', [
     });
 
     const expense = await newExpense.save();
-    res.json(expense);
+    res.status(201).json({
+      success: true,
+      message: 'Expense created successfully',
+      data: expense
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Error creating expense:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while creating expense'
+    });
   }
 });
 
@@ -144,31 +165,88 @@ router.put('/:id', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path,
+          message: err.msg,
+          value: err.value
+        }))
+      });
+    }
+
+    // Validate the ID format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid expense ID format'
+      });
     }
 
     const { title, amount, category, description, date } = req.body;
 
     let expense = await Expense.findById(req.params.id);
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Expense not found' 
+      });
     }
 
     // Make sure user owns the expense
     if (expense.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'User not authorized' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'User not authorized to update this expense' 
+      });
     }
 
     expense = await Expense.findByIdAndUpdate(
       req.params.id,
       { title, amount, category, description, date },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
-    res.json(expense);
+    if (!expense) {
+      return res.status(404).json({
+        success: false,
+        message: 'Expense not found or update failed'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Expense updated successfully',
+      data: expense
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Error updating expense:', error);
+    
+    // Handle specific MongoDB errors
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid expense ID format'
+      });
+    }
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: Object.values(error.errors).map(err => ({
+          field: err.path,
+          message: err.message
+        }))
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while updating expense',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -177,21 +255,60 @@ router.put('/:id', [
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
+    // Validate the ID format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid expense ID format'
+      });
+    }
+
     const expense = await Expense.findById(req.params.id);
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Expense not found' 
+      });
     }
 
     // Make sure user owns the expense
     if (expense.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'User not authorized' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'User not authorized to delete this expense' 
+      });
     }
 
-    await expense.remove();
-    res.json({ message: 'Expense removed' });
+    // Use findByIdAndDelete instead of remove()
+    const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
+    
+    if (!deletedExpense) {
+      return res.status(404).json({
+        success: false,
+        message: 'Expense not found or already deleted'
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'Expense deleted successfully' 
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Server error');
+    console.error('Error deleting expense:', error);
+    
+    // Handle specific MongoDB errors
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid expense ID format'
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while deleting expense',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

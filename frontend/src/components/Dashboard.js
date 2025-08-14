@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { format } from 'date-fns';
 import { Plus, TrendingUp, Calendar, DollarSign, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -24,12 +24,12 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const [expensesRes, monthlyRes, analyticsRes] = await Promise.all([
-        axios.get('/api/expenses'),
-        axios.get('/api/expenses/monthly'),
-        axios.get('/api/expenses/analytics')
+        api.get('/api/expenses'),
+        api.get('/api/expenses/monthly'),
+        api.get('/api/expenses/analytics')
       ]);
 
-      setExpenses(expensesRes.data);
+      setExpenses(expensesRes.data.data || expensesRes.data);
       setMonthlyData(monthlyRes.data);
       setAnalyticsData(analyticsRes.data);
     } catch (error) {
@@ -43,13 +43,20 @@ const Dashboard = () => {
 
   const handleAddExpense = async (expenseData) => {
     try {
-      const response = await axios.post('/api/expenses', expenseData);
-      setExpenses([response.data, ...expenses]);
-      await fetchData(); // Refresh all data
-      setShowExpenseForm(false);
-      toast.success('Expense added successfully!');
+      const response = await api.post('/api/expenses', expenseData);
+      if (response.data.success) {
+        setExpenses([response.data.data, ...expenses]);
+        await fetchData(); // Refresh all data
+        setShowExpenseForm(false);
+        toast.success('Expense added successfully!');
+      } else {
+        toast.error(response.data.message || 'Failed to add expense');
+      }
     } catch (error) {
-      toast.error('Failed to add expense');
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errors?.[0]?.message || 
+                          'Failed to add expense';
+      toast.error(errorMessage);
       // eslint-disable-next-line no-console
       console.error('Error adding expense:', error);
     }
@@ -57,13 +64,20 @@ const Dashboard = () => {
 
   const handleUpdateExpense = async (id, expenseData) => {
     try {
-      const response = await axios.put(`/api/expenses/${id}`, expenseData);
-      setExpenses(expenses.map(exp => exp._id === id ? response.data : exp));
-      await fetchData(); // Refresh all data
-      setEditingExpense(null);
-      toast.success('Expense updated successfully!');
+      const response = await api.put(`/api/expenses/${id}`, expenseData);
+      if (response.data.success) {
+        setExpenses(expenses.map(exp => exp._id === id ? response.data.data : exp));
+        await fetchData(); // Refresh all data
+        setEditingExpense(null);
+        toast.success('Expense updated successfully!');
+      } else {
+        toast.error(response.data.message || 'Failed to update expense');
+      }
     } catch (error) {
-      toast.error('Failed to update expense');
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errors?.[0]?.message || 
+                          'Failed to update expense';
+      toast.error(errorMessage);
       // eslint-disable-next-line no-console
       console.error('Error updating expense:', error);
     }
@@ -72,12 +86,19 @@ const Dashboard = () => {
   const handleDeleteExpense = async (id) => {
     if (window.confirm('Are you sure you want to delete this expense?')) {
       try {
-        await axios.delete(`/api/expenses/${id}`);
-        setExpenses(expenses.filter(exp => exp._id !== id));
-        await fetchData(); // Refresh all data
-        toast.success('Expense deleted successfully!');
+        const response = await api.delete(`/api/expenses/${id}`);
+        if (response.data.success) {
+          setExpenses(expenses.filter(exp => exp._id !== id));
+          await fetchData(); // Refresh all data
+          toast.success('Expense deleted successfully!');
+        } else {
+          toast.error(response.data.message || 'Failed to delete expense');
+        }
       } catch (error) {
-        toast.error('Failed to delete expense');
+        const errorMessage = error.response?.data?.message || 
+                            error.response?.data?.errors?.[0]?.message || 
+                            'Failed to delete expense';
+        toast.error(errorMessage);
         // eslint-disable-next-line no-console
         console.error('Error deleting expense:', error);
       }
