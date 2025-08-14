@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { X, DollarSign, Tag, Calendar, FileText } from 'lucide-react';
+import { X, DollarSign, Tag, Calendar, FileText, IndianRupee } from 'lucide-react';
 
 const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
   const {
@@ -39,40 +39,47 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
   };
 
   const categories = [
-    'Food',
-    'Transport',
+    'Food & Dining',
+    'Transportation',
     'Entertainment',
     'Shopping',
-    'Bills',
+    'Bills & Utilities',
     'Healthcare',
     'Education',
+    'Travel',
+    'Gifts',
     'Other'
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {isEditing ? 'Edit Expense' : 'Add New Expense'}
-          </h2>
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+              <IndianRupee className="h-5 w-5 text-white" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {isEditing ? 'Edit Expense' : 'Add New Expense'}
+            </h2>
+          </div>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Expense Title
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FileText className="h-5 w-5 text-gray-400" />
+                <FileText className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
@@ -89,18 +96,18 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
               />
             </div>
             {errors.title && (
-              <p className="mt-1 text-sm text-danger-600">{errors.title.message}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.title.message}</p>
             )}
           </div>
 
           {/* Amount */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-              Amount
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Amount (₹)
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="h-5 w-5 text-gray-400" />
+                <IndianRupee className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <input
                 type="number"
@@ -119,18 +126,18 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
               />
             </div>
             {errors.amount && (
-              <p className="mt-1 text-sm text-danger-600">{errors.amount.message}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.amount.message}</p>
             )}
           </div>
 
           {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Category
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Tag className="h-5 w-5 text-gray-400" />
+                <Tag className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <select
                 id="category"
@@ -148,18 +155,18 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
               </select>
             </div>
             {errors.category && (
-              <p className="mt-1 text-sm text-danger-600">{errors.category.message}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.category.message}</p>
             )}
           </div>
 
           {/* Date */}
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Date
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Calendar className="h-5 w-5 text-gray-400" />
+                <Calendar className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="date"
@@ -171,13 +178,13 @@ const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
               />
             </div>
             {errors.date && (
-              <p className="mt-1 text-sm text-danger-600">{errors.date.message}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.date.message}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description (Optional)
             </label>
             <textarea

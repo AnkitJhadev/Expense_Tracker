@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { Plus, TrendingUp, Calendar, DollarSign } from 'lucide-react';
+import { Plus, TrendingUp, Calendar, DollarSign, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ExpenseForm from './expenses/ExpenseForm';
 import ExpenseList from './expenses/ExpenseList';
@@ -88,7 +88,10 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -96,58 +99,64 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Manage your expenses and track your spending</p>
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full">
+          <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Expense Tracker</span>
         </div>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white black:text-white">
+          Welcome to Your Dashboard
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Manage your expenses, track your spending, and gain insights into your financial habits
+        </p>
         <button
           onClick={() => setShowExpenseForm(true)}
-          className="btn-primary flex items-center space-x-2"
+          className="btn-primary flex items-center space-x-2 mx-auto"
         >
           <Plus className="h-5 w-5" />
-          <span>Add Expense</span>
+          <span>Add New Expense</span>
         </button>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
+        <div className="card card-hover bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
           <div className="flex items-center">
-            <div className="p-2 bg-primary-100 rounded-lg">
-              <DollarSign className="h-6 w-6 text-primary-600" />
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <DollarSign className="h-7 w-7 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total This Month</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ${monthlyData.total?.toFixed(2) || '0.00'}
+              <p className="text-sm font-medium text-green-700 dark:text-green-300">Total This Month</p>
+              <p className="text-3xl font-bold text-green-800 dark:text-green-200">
+                ₹{monthlyData.total?.toFixed(2) || '0.00'}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card card-hover bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700">
           <div className="flex items-center">
-            <div className="p-2 bg-success-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-success-600" />
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <TrendingUp className="h-7 w-7 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Expenses Count</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Expenses Count</p>
+              <p className="text-3xl font-bold text-blue-800 dark:text-blue-200">
                 {monthlyData.count || 0}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card card-hover bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200 dark:border-purple-700">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl">
+              <Calendar className="h-7 w-7 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Current Month</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Current Month</p>
+              <p className="text-3xl font-bold text-purple-800 dark:text-purple-200">
                 {format(new Date(), 'MMM yyyy')}
               </p>
             </div>
