@@ -34,6 +34,7 @@ const Dashboard = () => {
       setAnalyticsData(analyticsRes.data);
     } catch (error) {
       toast.error('Failed to fetch data');
+      // eslint-disable-next-line no-console
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
@@ -49,6 +50,7 @@ const Dashboard = () => {
       toast.success('Expense added successfully!');
     } catch (error) {
       toast.error('Failed to add expense');
+      // eslint-disable-next-line no-console
       console.error('Error adding expense:', error);
     }
   };
@@ -62,6 +64,7 @@ const Dashboard = () => {
       toast.success('Expense updated successfully!');
     } catch (error) {
       toast.error('Failed to update expense');
+      // eslint-disable-next-line no-console
       console.error('Error updating expense:', error);
     }
   };
@@ -75,6 +78,7 @@ const Dashboard = () => {
         toast.success('Expense deleted successfully!');
       } catch (error) {
         toast.error('Failed to delete expense');
+        // eslint-disable-next-line no-console
         console.error('Error deleting expense:', error);
       }
     }

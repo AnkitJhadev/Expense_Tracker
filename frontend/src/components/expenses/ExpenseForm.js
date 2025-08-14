@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { X, DollarSign, Tag, Calendar, FileText, IndianRupee } from 'lucide-react';
+import { X, Tag, Calendar, FileText, IndianRupee } from 'lucide-react';
 
 const ExpenseForm = ({ onSubmit, onCancel, expense, isEditing }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
     setValue
   } = useForm();
 

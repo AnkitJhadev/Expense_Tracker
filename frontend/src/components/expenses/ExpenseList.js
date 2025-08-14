@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { Edit, Trash2, Tag, Calendar, IndianRupee, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { Edit, Trash2, Tag, IndianRupee, Filter, SortAsc, SortDesc } from 'lucide-react';
 
 const ExpenseList = ({ expenses, onEdit, onDelete }) => {
   const [sortBy, setSortBy] = useState('date');
